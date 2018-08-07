@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>后台管理系统</title>
+    <meta name="author" content="DeathGhost"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'ad_static/css/style.css' %}">
+    <!--[if lt IE 9]>
+<script src="js/html5.js"></script>
+<![endif]-->
+    <script src="{% static 'ad_static/js/jquery.js' %}"></script>
+    <script src="{% static 'ad_static/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+    <script>
+
+        (function ($) {
+            $(window).load(function () {
+
+                $("a[rel='load-content']").click(function (e) {
+                    e.preventDefault();
+                    var url = $(this).attr("href");
+                    $.get(url, function (data) {
+                        $(".content .mCSB_container").append(data); //load new content inside .mCSB_container
+                        //scroll-to appended content
+                        $(".content").mCustomScrollbar("scrollTo", "h2:last");
+                    });
+                });
+
+                $(".content").delegate("a[href='top']", "click", function (e) {
+                    e.preventDefault();
+                    $(".content").mCustomScrollbar("scrollTo", $(this).attr("href"));
+                });
+
+            });
+        })(jQuery);
+    </script>
+</head>
+<body>
+
+{% include 'common.html' %}
+
+<section class="rt_wrap content mCustomScrollbar">
+    <div class="rt_content">
+        <div class="page_title">
+            <h2 class="fl">商品详情示例</h2>
+            <a class="fr top_rt_btn">返回产品列表</a>
+        </div>
+        <section>
+            <form action="" method="post" enctype="multipart/form-data" name="upload" id="goods_info_form">
+                {% csrf_token %}
+                <ul class="ulColumn2">
+                    <li>
+                        <span class="item_name" style="width:120px;">商品名称：</span>
+                        <input type="text" class="textbox textbox_295" placeholder="商品名称..." name="goods_name" value="{{ good.goods_name }}"/>
+                        <span class="errorTips" style="visibility: hidden">错误提示信息...</span>
+                    </li>
+                    <li>
+                        <span class="item_name" style="width:120px;">商品货号：</span>
+                        <input type="text" class="textbox" placeholder="商品货号..." name="goods_ID" value="{{ good.goods_ID }}"/>
+                        {% if msg %}
+                        <span class="errorTips">{{ msg }}</span>
+                        {% endif %}
+                    </li>
+                    <li>
+                        <span class="item_name" style="width:120px;">商品价格：</span>
+                        <input type="text" class="textbox" placeholder="商品价格..." name="goods_price" value="{{ good.goods_price }}"/>
+                        <span class="errorTips" style="visibility: hidden">错误提示信息...</span>
+                    </li>
+                    <li>
+                        <span class="item_name" style="width:120px;">分类：</span>
+                        <select class="select" name="goods_classify">
+                            {% for temp in goods_classify %}
+                                <option>{{ temp.goods_classify }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="errorTips" style="visibility: hidden">错误提示信息...</span>
+                    </li>
+                    <li>
+                        <span class="item_name" style="width:120px;">商品规格：</span>
+                        <input type="text" class="textbox" placeholder="商品规格..." name="goods_specification" value="{{ good.goods_specification }}"/>
+                        <span class="errorTips" style="visibility: hidden">错误提示信息...</span>
+                    </li>
+                    <li>
+                        <span class="item_name" style="width:120px;">推荐：</span>
+                        {#                    1是精品，2是热销，3是新品#}
+                        <label class="single_selection"><input type="radio" name="goods_label" value="1"/>是否精品</label>
+                        <label class="single_selection"><input type="radio" name="goods_label" value="2"/>是否热销</label>
+                        <label class="single_selection"><input type="radio" name="goods_label" value="3"/>是否新品</label>
+                    </li>
+                    <li>
+                        <span class="item_name" style="width:120px;">上传图片：</span>
+                        <label class="uploadImg">
+                            <input type="file" name="goods_pic"/>
+                            <span>上传图片</span>
+                        </label>
+                    </li>
+
+                    <li>
+                        <span class="item_name" style="width:120px;"></span>
+                        <input type="submit" class="link_btn"/>
+                    </li>
+                </ul>
+            </form>
+        </section>
+    </div>
+</section>
+<script src="{% static 'ad_static/js/ueditor.config.js' %}"></script>
+<script src="{% static 'ad_static/js/ueditor.all.min.js' %}"></script>
+<script type="text/javascript">
+
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    var ue = UE.getEditor('editor');
+
+
+    function isFocus(e) {
+        alert(UE.getEditor('editor').isFocus());
+        UE.dom.domUtils.preventDefault(e)
+    }
+
+    function setblur(e) {
+        UE.getEditor('editor').blur();
+        UE.dom.domUtils.preventDefault(e)
+    }
+
+    function insertHtml() {
+        var value = prompt('插入html代码', '');
+        UE.getEditor('editor').execCommand('insertHtml', value)
+    }
+
+    function createEditor() {
+        enableBtn();
+        UE.getEditor('editor');
+    }
+
+    function getAllHtml() {
+        alert(UE.getEditor('editor').getAllHtml())
+    }
+
+    function getContent() {
+        var arr = [];
+        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getContent());
+        alert(arr.join("\n"));
+    }
+
+    function getPlainTxt() {
+        var arr = [];
+        arr.push("使用editor.getPlainTxt()方法可以获得编辑器的带格式的纯文本内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getPlainTxt());
+        alert(arr.join('\n'))
+    }
+
+    function setContent(isAppendTo) {
+        var arr = [];
+        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
+        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
+        alert(arr.join("\n"));
+    }
+
+    function setDisabled() {
+        UE.getEditor('editor').setDisabled('fullscreen');
+        disableBtn("enable");
+    }
+
+    function setEnabled() {
+        UE.getEditor('editor').setEnabled();
+        enableBtn();
+    }
+
+    function getText() {
+        //当你点击按钮时编辑区域已经失去了焦点，如果直接用getText将不会得到内容，所以要在选回来，然后取得内容
+        var range = UE.getEditor('editor').selection.getRange();
+        range.select();
+        var txt = UE.getEditor('editor').selection.getText();
+        alert(txt)
+    }
+
+    function getContentTxt() {
+        var arr = [];
+        arr.push("使用editor.getContentTxt()方法可以获得编辑器的纯文本内容");
+        arr.push("编辑器的纯文本内容为：");
+        arr.push(UE.getEditor('editor').getContentTxt());
+        alert(arr.join("\n"));
+    }
+
+    function hasContent() {
+        var arr = [];
+        arr.push("使用editor.hasContents()方法判断编辑器里是否有内容");
+        arr.push("判断结果为：");
+        arr.push(UE.getEditor('editor').hasContents());
+        alert(arr.join("\n"));
+    }
+
+    function setFocus() {
+        UE.getEditor('editor').focus();
+    }
+
+    function deleteEditor() {
+        disableBtn();
+        UE.getEditor('editor').destroy();
+    }
+
+    function disableBtn(str) {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            if (btn.id == str) {
+                UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+            } else {
+                btn.setAttribute("disabled", "true");
+            }
+        }
+    }
+
+    function enableBtn() {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+        }
+    }
+
+    function getLocalData() {
+        alert(UE.getEditor('editor').execCommand("getlocaldata"));
+    }
+
+    function clearLocalData() {
+        UE.getEditor('editor').execCommand("clearlocaldata");
+        alert("已清空草稿箱")
+    }
+    $(document).ready(function () {
+        console.log({{ good.goods_label }})
+        if ('{{ good.goods_label }}' ==  '1') {
+            $('input[value=1]').attr('checked', 'checked');
+        } else if ('{{ good.goods_label }}' == '2') {
+            $('input[value=2]').attr('checked', 'checked');
+        } else if ('{{ good.goods_label }}' == '3') {
+            $('input[value=3]').attr('checked', 'checked');
+        }
+    })
+</script>
+</body>
+</html>
